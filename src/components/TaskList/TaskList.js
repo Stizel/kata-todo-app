@@ -4,19 +4,15 @@ import Task from "../Task/Task";
 
 import "./TaskList.css";
 
-const TaskList = ({tasks}) => {
-    tasks = tasks.map((task) => {
-        const {id, editing, completed, description} = task;
+export default function TaskList({tasks, onDeleted}) {
+
+    const elements = tasks.map((task) => {
+        const {id} = task;
         return (
-            <li key={id} className={editing ? "editing" : completed ? "completed" : null}>
-                <Task {...task} />
-                {editing ? <input type="text" className="edit" value={description}/> : null}
-            </li>
+            <Task {...task} onDeleted={() => onDeleted(id)}/>
         );
     });
 
-    return <ul className="todo-list">{tasks}</ul>;
-
+    return <ul className="todo-list">{elements}</ul>;
 };
 
-export default TaskList;

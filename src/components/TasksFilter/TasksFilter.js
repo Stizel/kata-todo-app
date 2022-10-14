@@ -1,19 +1,41 @@
-import React from "react";
+import React, {Component} from "react";
 
 import "./TasksFilter.css";
 
-const TasksFilter = ({filters}) => {
 
-    filters = filters.map(({selected, id, label}) => {
+export default class TasksFilter extends Component{
+
+
+
+    render(){
+        const {filters} = this.props
+
+        const elements = filters.map(({selected, id, label}) => {
+            return (
+                <li key={id}>
+                    <button className={selected ? "selected" : null}>{label}</button>
+                </li>);
+        });
+
         return (
-            <li key={id}>
-                <button className={selected ? "selected" : null}>{label}</button>
-            </li>);
-    });
+            <ul className="filters">{elements} </ul>
+        );
+    }
 
-    return (
-        <ul className="filters">{filters} </ul>
-    );
-};
+}
 
-export default TasksFilter;
+// const TasksFilter = ({filters}) => {
+//
+//     filters = filters.map(({selected, id, label}) => {
+//         return (
+//             <li key={id}>
+//                 <button className={selected ? "selected" : null}>{label}</button>
+//             </li>);
+//     });
+//
+//     return (
+//         <ul className="filters">{filters} </ul>
+//     );
+// };
+//
+// export default TasksFilter;
