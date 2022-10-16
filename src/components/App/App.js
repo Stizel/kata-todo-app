@@ -1,83 +1,124 @@
 import React, {Component} from "react";
-import {formatDistanceToNow} from 'date-fns';
 import NewTaskForm from "../NewTaskForm/NewTaskForm";
 import TaskList from "../TaskList/TaskList";
 import Footer from "../Footer/Footer";
+import {v4 as uuidv4} from "uuid";
 
 import "./App.css";
 
 export default class App extends Component {
 
     state = {
-
         tasks: [
-            {
-                description: "Completed task",
-                created: formatDistanceToNow(Date.now()),
-                editing: false,
-                completed: true,
-                id: 1
-            },
-            {
-                description: "Editing task",
-                created: formatDistanceToNow(Date.now()),
-                editing: true,
-                completed: false,
-                id: 2
-            },
-            {
-                description: "Active task",
-                editing: false,
-                completed: false,
-                created: formatDistanceToNow(Date.now()),
-                id: 3
-            },
+            this.createTodoItem("Completed task"),
+            this.createTodoItem("Editing task"),
+            this.createTodoItem("Active task"),
         ],
 
-        filters: [
-            {
-                label: "All",
-                selected: true,
-                id: 15550
-            },
-            {
-                label: "Active",
-                selected: false,
-                id: 25550
-            },
-            {
-                label: "Completed",
-                selected: false,
-                id: 35550
-            }]
+        filter: "all"
     };
 
-    deleteItem = (id) => {
-        this.setState(({ tasks }) => {
-            const idx = tasks.findIndex((el) => el.id === id);
-            console.log(idx);
-            const before = tasks.slice(0, idx);
-            const after = tasks.slice(idx + 1);
-            const newArr = [...before, ...after];
+    createTodoItem(label) {
+        return {
+            label: label,
+            created: Date.now(),
+            edit: false,
+            done: false,
+            id: uuidv4()
+        };
+    }
 
+    deleteItem = (id) => {
+        this.setState(({tasks}) => {
+            const idx = tasks.findIndex((el) => el.id === id);
             return {
-                tasks: newArr,
+                tasks: [...tasks.slice(0, idx), ...tasks.slice(idx + 1)]
             };
         });
     };
+    addItem = (text) => {
+        const newItem = this.createTodoItem(text);
+        this.setState(({tasks}) => ({
+            tasks: [...tasks, newItem]
+        }));
+    };
+
+    editItem = (id, text) => {
+        const {tasks} = this.state;
+        const [item] = tasks.filter((el) => el.id === id);
+        const newItem = {...item, label: text, edit: false};
+        this.setState(({tasks: newTasks}) => {
+            const idx = newTasks.findIndex((el) => el.id === id);
+            return {tasks: [...newTasks.slice(0, idx), newItem, ...newTasks.slice(idx + 1)]};
+        });
+    };
+
+    onToggleEdit = (id) => {
+        this.setState(({tasks}) => ({
+            tasks: this.toggleProperty(tasks, id, 'edit'),
+        }));
+    };
+
+    toggleProperty(arr, id, propName) {
+        //find el
+        const idx = arr.findIndex((el) => el.id === id);
+        //update obj
+        const oldItem = arr[idx];
+        const newItem = {...oldItem, [propName]: !oldItem[propName]};
+        //construct new arr
+        return [...arr.slice(0, idx), newItem, ...arr.slice(idx + 1)];
+    }
+
+    onToggleDone = (id) => {
+        this.setState(({tasks}) => ({
+            tasks: this.toggleProperty(tasks, id, "done"),
+        }));
+    };
+
+    filter(items, filter) {
+        switch (filter) {
+            case "all":
+                return items;
+            case "active":
+                return items.filter((item) => !item.done);
+            case "done":
+                return items.filter((item) => item.done);
+            default:
+                return items;
+        }
+    }
+
+    onFilterChange = (filter) => {
+        this.setState({filter});
+    };
 
     render() {
-        const {tasks, filters} = this.state;
+        const {tasks, filter} = this.state;
+        const visibleItems = this.filter(tasks, filter);
+        const todoCount = tasks.filter((el) => !el.done).length;
+        const doneTasks = tasks.filter((el) => el.done);
+
         return (
             <section className="todoapp">
-                <NewTaskForm/>
+                <NewTaskForm onItemAdded={this.addItem}/>
                 <section className="main">
-                    <TaskList tasks={tasks} onDeleted={this.deleteItem}/>
-                    <Footer filters={filters}/>
+                    <TaskList
+                        tasks={visibleItems}
+                        onDeleted={this.deleteItem}
+                        onToggleDone={this.onToggleDone}
+                        onToggleEdit={this.onToggleEdit}
+                        editItem={this.editItem}
+                    />
+                    <Footer
+                        filter={filter}
+                        onFilterChange={this.onFilterChange}
+                        todoLeft={todoCount}
+                        doneTasks={doneTasks}
+                        deleteItem={this.deleteItem}
+                    />
                 </section>
             </section>
         );
-
     }
 };
 
