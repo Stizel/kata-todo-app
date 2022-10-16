@@ -1,15 +1,35 @@
 import React, {Component} from "react";
 import {formatDistanceToNow} from 'date-fns';
+import PropTypes from "prop-types";
 import "./Task.css";
 
 export default class Task extends Component {
+
+    static defaultProps = {
+        created: Date.now(),
+        editItem: () => {},
+        onDeleted: () => {},
+        onToggleDone: () => {},
+        onToggleEdit: () => {},
+    };
+
+    static propTypes = {
+        id: PropTypes.string.isRequired,
+        label: PropTypes.string.isRequired,
+        done: PropTypes.bool.isRequired,
+        edit: PropTypes.bool.isRequired,
+        created: PropTypes.number,
+        editItem: PropTypes.func,
+        onDeleted: PropTypes.func,
+        onToggleDone: PropTypes.func,
+        onToggleEdit: PropTypes.func,
+    };
 
     state = {
         label: this.props.label,
     };
 
     onLabelChange = (e) => {
-
         this.setState({label: e.target.value});
     };
     onSubmit = (evt) => {
@@ -23,7 +43,6 @@ export default class Task extends Component {
     render() {
         const {
             id,
-            label,
             edit,
             done,
             created,
@@ -31,7 +50,7 @@ export default class Task extends Component {
             onToggleDone,
             onToggleEdit,
         } = this.props;
-        const {label: newLabel} = this.state;
+        const {label} = this.state;
         return (
 
             <li className={edit ? "editing" : done ? "completed" : null}>
@@ -57,7 +76,7 @@ export default class Task extends Component {
                                 type="text"
                                 className="edit"
                                 autoFocus
-                                value={newLabel}
+                                value={label}
                                 onChange={this.onLabelChange}
                             />
                         </form>
