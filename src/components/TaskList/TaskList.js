@@ -6,7 +6,7 @@ import Task from '../Task/Task'
 import './TaskList.css'
 
 export default function TaskList({ tasks, onDeleted, onToggleDone, onToggleEdit, editItem }) {
-  tasks = tasks.map((task) => {
+  const taskz = tasks.map((task) => {
     const { id } = task
     return (
       <Task
@@ -20,7 +20,7 @@ export default function TaskList({ tasks, onDeleted, onToggleDone, onToggleEdit,
     )
   })
 
-  return <ul className="todo-list">{tasks}</ul>
+  return <ul className="todo-list">{taskz}</ul>
 }
 
 TaskList.defaultProps = {
@@ -31,7 +31,7 @@ TaskList.defaultProps = {
 }
 
 TaskList.propTypes = {
-  tasks: PropTypes.arrayOf(PropTypes.object).isRequired,
+  tasks: PropTypes.arrayOf(PropTypes.objectOf).isRequired,
   onDeleted: PropTypes.func,
   onToggleDone: PropTypes.func,
   onToggleEdit: PropTypes.func,

@@ -13,23 +13,28 @@
     "plugin:react/recommended",
     "plugin:prettier/recommended",
     "plugin:import/errors",
-    "plugin:import/warnings"
+    "plugin:import/warnings",
+    "airbnb",
+    "prettier"
   ],
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
     },
-    "ecmaVersion": 2022,
+    "ecmaVersion": "latest",
     "sourceType": "module"
   },
+
   "plugins": [
-    "react",
     "prettier",
-    "import"
+    "react",
+    "import",
+    "jsx-a11y"
   ],
   "rules": {
     "indent": [
       "off"
+
     ],
     "prettier/prettier": "error",
     "linebreak-style": [
@@ -44,6 +49,7 @@
       "error",
       "never"
     ],
+    "react/jsx-props-no-spreading": "off",
     "react/react-in-jsx-scope": "off",
     "react/prop-types": 0,
     "import/no-unresolved": [
@@ -91,8 +97,8 @@
         ]
       }
     },
-  "react": {
-    "version": "detect"
-  }
+    "react": {
+      "version": "detect"
+    }
   }
 }

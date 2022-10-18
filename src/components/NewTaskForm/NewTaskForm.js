@@ -4,27 +4,28 @@ import PropTypes from 'prop-types'
 import './NewTaskForm.css'
 
 export default class NewTaskForm extends Component {
-  static propTypes = {
-    onItemAdded: PropTypes.func.isRequired,
-  }
+  constructor() {
+    super()
 
-  state = {
-    label: '',
-  }
+    this.state = {
+      label: '',
+    }
 
-  onLabelChange = (e) => {
-    this.setState({ label: e.target.value })
-  }
+    this.onLabelChange = (e) => {
+      this.setState({ label: e.target.value })
+    }
 
-  onSubmit = (evt) => {
-    evt.preventDefault()
-    const { onItemAdded } = this.props
-    const { label } = this.state
-    if (label) onItemAdded(label)
-    this.setState({ label: '' })
+    this.onSubmit = (evt) => {
+      evt.preventDefault()
+      const { onItemAdded } = this.props
+      const { label } = this.state
+      if (label) onItemAdded(label)
+      this.setState({ label: '' })
+    }
   }
 
   render() {
+    const { label } = this.state
     return (
       <header className="header">
         <h1>todos</h1>
@@ -32,12 +33,14 @@ export default class NewTaskForm extends Component {
           <input
             className="new-todo"
             placeholder="What needs to be done?"
-            autoFocus
             onChange={this.onLabelChange}
-            value={this.state.label}
+            value={label}
           />
         </form>
       </header>
     )
   }
+}
+NewTaskForm.propTypes = {
+  onItemAdded: PropTypes.func.isRequired,
 }
