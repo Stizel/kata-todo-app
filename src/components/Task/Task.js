@@ -37,8 +37,13 @@ export default class Task extends Component {
         <div className="view">
           <input id={htmlLabel} className="toggle" type="checkbox" onChange={onToggleDone} checked={done} />
           <label htmlFor={htmlLabel}>
-            <span className="description">{newLabel}</span>
-            <span className="created">created {formatDistanceToNow(created, { includeSeconds: true })} ago</span>
+            <span className="title">{newLabel}</span>
+            <span className="description">
+              <button type="button" className="icon icon-play" aria-label="play" />
+              <button type="button" className="icon icon-pause" aria-label="pause" />
+              12:25
+            </span>
+            <span className="description">created {formatDistanceToNow(created, { includeSeconds: true })} ago</span>
           </label>
           <button type="button" className="icon icon-edit" onClick={() => onToggleEdit(id)} aria-label="edit" />
           <button type="button" className="icon icon-destroy" onClick={onDeleted} aria-label="delete" />
