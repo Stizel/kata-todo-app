@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import { formatDistanceToNow } from 'date-fns'
-import PropTypes from 'prop-types'
+import PropTypes, { objectOf } from 'prop-types'
+
 import './Task.css'
+import Timer from '../Timer/Timer'
 
 export default class Task extends Component {
   constructor(props) {
@@ -25,28 +27,26 @@ export default class Task extends Component {
   }
 
   render() {
-    const { id, edit, done, created, onDeleted, onToggleDone, onToggleEdit } = this.props
+    const { id, visible, edit, done, created, onDeleted, onToggleDone, onToggleEdit, timer, tick } = this.props
     const { newLabel } = this.state
-    let clazz = null
-    if (edit) clazz = 'editing'
-
+    let clazz = ''
     if (done) clazz = 'completed'
+    if (edit) clazz = 'editing'
+    if (!visible.some((el) => el.id === id)) clazz = 'hidden'
+
     const htmlLabel = id
     return (
       <li className={clazz}>
         <div className="view">
-          <input id={htmlLabel} className="toggle" type="checkbox" onChange={onToggleDone} checked={done} />
+          <input id={htmlLabel} className="toggle" type="checkbox" onChange={() => onToggleDone(id)} checked={done} />
           <label htmlFor={htmlLabel}>
             <span className="title">{newLabel}</span>
-            <span className="description">
-              <button type="button" className="icon icon-play" aria-label="play" />
-              <button type="button" className="icon icon-pause" aria-label="pause" />
-              12:25
-            </span>
+            <Timer timer={timer} tick={() => tick(id)} />
+
             <span className="description">created {formatDistanceToNow(created, { includeSeconds: true })} ago</span>
           </label>
           <button type="button" className="icon icon-edit" onClick={() => onToggleEdit(id)} aria-label="edit" />
-          <button type="button" className="icon icon-destroy" onClick={onDeleted} aria-label="delete" />
+          <button type="button" className="icon icon-destroy" onClick={() => onDeleted(id)} aria-label="delete" />
         </div>
         {edit ? (
           <form onSubmit={this.onSubmit}>
@@ -67,6 +67,7 @@ Task.defaultProps = {
 }
 Task.propTypes = {
   id: PropTypes.string.isRequired,
+  visible: PropTypes.arrayOf(objectOf).isRequired,
   label: PropTypes.string.isRequired,
   done: PropTypes.bool.isRequired,
   edit: PropTypes.bool.isRequired,

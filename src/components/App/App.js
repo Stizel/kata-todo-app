@@ -11,19 +11,20 @@ export default class App extends Component {
   constructor() {
     super()
 
-    this.createTodoItem = (description) => ({
+    this.createTodoItem = (description, timer) => ({
       label: description,
       created: Date.now(),
       edit: false,
       done: false,
       id: uuidv4(),
+      timer,
     })
 
     this.state = {
       tasks: [
-        this.createTodoItem('Completed task'),
-        this.createTodoItem('Editing task'),
-        this.createTodoItem('Active task'),
+        this.createTodoItem('Completed task', 655),
+        this.createTodoItem('Editing task', 1000),
+        this.createTodoItem('Active task', 65),
       ],
       filter: 'all',
     }
@@ -37,8 +38,9 @@ export default class App extends Component {
       })
     }
 
-    this.addItem = (text) => {
-      const newItem = this.createTodoItem(text)
+    this.addItem = (text, min, sec) => {
+      const timer = this.getTime(min, sec)
+      const newItem = this.createTodoItem(text, timer)
       this.setState(({ tasks }) => ({
         tasks: [...tasks, newItem],
       }))
@@ -92,6 +94,23 @@ export default class App extends Component {
     this.onFilterChange = (filter) => {
       this.setState({ filter })
     }
+
+    this.getTime = (min, sec) => {
+      const m = +min
+      const s = +sec
+      return m * 60 + s
+    }
+
+    this.tick = (id) => {
+      const { tasks } = this.state
+      const [item] = tasks.filter((el) => el.id === id)
+      const { timer } = item
+      const newItem = { ...item, timer: timer - 1 }
+      this.setState(({ tasks: newTasks }) => {
+        const idx = newTasks.findIndex((el) => el.id === id)
+        return { tasks: [...newTasks.slice(0, idx), newItem, ...newTasks.slice(idx + 1)] }
+      })
+    }
   }
 
   render() {
@@ -105,11 +124,13 @@ export default class App extends Component {
         <NewTaskForm onItemAdded={this.addItem} />
         <section className="main">
           <TaskList
-            tasks={visibleItems}
+            visible={visibleItems}
+            tasks={tasks}
             onDeleted={this.deleteItem}
             onToggleDone={this.onToggleDone}
             onToggleEdit={this.onToggleEdit}
             editItem={this.editItem}
+            tick={this.tick}
           />
           <Footer
             filter={filter}

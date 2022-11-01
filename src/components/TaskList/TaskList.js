@@ -5,17 +5,19 @@ import Task from '../Task/Task'
 
 import './TaskList.css'
 
-export default function TaskList({ tasks, onDeleted, onToggleDone, onToggleEdit, editItem }) {
+export default function TaskList({ tasks, visible, onDeleted, onToggleDone, onToggleEdit, editItem, tick }) {
   const taskz = tasks.map((task) => {
     const { id } = task
     return (
       <Task
         key={id}
         {...task}
-        onDeleted={() => onDeleted(id)}
-        onToggleDone={() => onToggleDone(id)}
+        onDeleted={onDeleted}
+        onToggleDone={onToggleDone}
         onToggleEdit={onToggleEdit}
         editItem={editItem}
+        tick={tick}
+        visible={visible}
       />
     )
   })
