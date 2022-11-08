@@ -10,6 +10,7 @@ export default class Task extends Component {
     super(props)
     const { label } = this.props
     this.state = {
+      oldLabel: label,
       newLabel: label,
     }
 
@@ -17,18 +18,29 @@ export default class Task extends Component {
       this.setState({ newLabel: e.target.value })
     }
 
-    this.onSubmit = (evt) => {
-      evt.preventDefault()
+    this.onKeyDown = (e) => {
       const { editItem, id } = this.props
-      const { newLabel } = this.state
-      editItem(id, newLabel)
-      this.setState({ newLabel })
+      const { oldLabel, newLabel } = this.state
+      if (e.key === 'Enter') {
+        editItem(id, newLabel)
+        this.setState({ oldLabel: newLabel })
+      } else if (e.key === 'Escape') {
+        editItem(id, label)
+        this.setState({ oldLabel, newLabel: oldLabel })
+      }
+    }
+
+    this.blur = () => {
+      const { editItem, id } = this.props
+      const { oldLabel } = this.state
+      editItem(id, label)
+      this.setState({ oldLabel, newLabel: oldLabel })
     }
   }
 
   render() {
     const { id, visible, edit, done, created, onDeleted, onToggleDone, onToggleEdit, timer, tick } = this.props
-    const { newLabel } = this.state
+    const { newLabel, oldLabel } = this.state
     let clazz = ''
     if (done) clazz = 'completed'
     if (edit) clazz = 'editing'
@@ -40,7 +52,7 @@ export default class Task extends Component {
         <div className="view">
           <input id={htmlLabel} className="toggle" type="checkbox" onChange={() => onToggleDone(id)} checked={done} />
           <label htmlFor={htmlLabel}>
-            <span className="title">{newLabel}</span>
+            <span className="title">{oldLabel}</span>
             <Timer timer={timer} tick={() => tick(id)} />
 
             <span className="description">created {formatDistanceToNow(created, { includeSeconds: true })} ago</span>
@@ -49,9 +61,14 @@ export default class Task extends Component {
           <button type="button" className="icon icon-destroy" onClick={() => onDeleted(id)} aria-label="delete" />
         </div>
         {edit ? (
-          <form onSubmit={this.onSubmit}>
-            <input type="text" className="edit" value={newLabel} onChange={this.onLabelChange} />
-          </form>
+          <input
+            type="text"
+            onKeyDown={this.onKeyDown}
+            onBlur={this.blur}
+            className="edit"
+            value={newLabel}
+            onChange={this.onLabelChange}
+          />
         ) : null}
       </li>
     )

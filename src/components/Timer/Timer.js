@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './Timer.css'
-import PropTypes, { number } from 'prop-types'
+import PropTypes from 'prop-types'
 
 export default class Timer extends Component {
   constructor(props) {
@@ -55,12 +55,13 @@ export default class Timer extends Component {
 
   render() {
     const { timer } = this.props
+    const { status } = this.state
+    const cls = status === 'pause' ? 'icon icon-play' : 'icon icon-pause'
+    const timerClickHandler = status === 'pause' ? this.startTimer : this.pauseTimer
+
     return (
       <span className="description">
-        <div className="buttons">
-          <button type="button" className="icon icon-play" aria-label="play" onClick={this.startTimer} />
-          <button type="button" className="icon icon-pause" aria-label="pause" onClick={this.pauseTimer} />
-        </div>
+        <button type="button" className={cls} aria-label="play" onClick={timerClickHandler} />
         {this.printTime(timer)}
       </span>
     )
@@ -71,6 +72,6 @@ Timer.defaultProps = {
   tick: () => {},
 }
 Timer.propTypes = {
-  timer: number.isRequired,
+  timer: PropTypes.number.isRequired,
   tick: PropTypes.func,
 }
