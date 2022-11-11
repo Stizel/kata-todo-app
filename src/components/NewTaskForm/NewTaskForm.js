@@ -1,85 +1,86 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
 import './NewTaskForm.css'
 
-export default class NewTaskForm extends Component {
-  constructor() {
-    super()
+export default function NewTaskForm({ onItemAdded }) {
+  const [label, setLabel] = useState('')
+  const [min, setMin] = useState('')
+  const [sec, setSec] = useState('')
 
-    this.state = {
-      label: '',
-      min: '',
-      sec: '',
-    }
+  const onLabelChange = (e) => {
+    setLabel(e.target.value)
+  }
 
-    this.onLabelChange = (e) => {
-      this.setState({ label: e.target.value })
-    }
-    this.onMinChange = (e) => {
-      if (+e.target.value < 1) {
-        this.setState({ min: '00' })
-      } else if (+e.target.value > 59) {
-        this.setState({ min: '60', sec: '00' })
-      } else this.setState({ min: e.target.value })
-    }
-    this.onSecChange = (e) => {
-      const { min } = this.state
-      if (+e.target.value < 1) {
-        this.setState({ sec: '00' })
-      } else if (min > 59) {
-        this.setState({ sec: '00' })
-      } else if (e.target.value > 59) {
-        this.setState({ min: +min + 1, sec: '00' })
-      } else this.setState({ sec: e.target.value })
-    }
+  const onMinChange = (e) => {
+    if (+e.target.value < 1) {
+      setMin('00')
+    } else if (+e.target.value > 59) {
+      setMin('60')
+      setSec('00')
+    } else setMin(e.target.value)
+  }
 
-    this.labelSubmitHandler = (e) => {
-      if (e.key === 'Enter') {
-        const { onItemAdded } = this.props
-        const { label, min, sec } = this.state
-        if (label) onItemAdded(label, min, sec)
-        this.setState({ label: '', min: '', sec: '' })
-      } else if (e.key === 'Escape') {
-        this.setState({ label: '', min: '', sec: '' })
+  const onSecChange = (e) => {
+    if (+e.target.value < 1) {
+      setSec('00')
+    } else if (min > 59) {
+      setMin('00')
+    } else if (e.target.value > 59) {
+      setMin(+min + 1)
+      setSec('00')
+    } else setSec(e.target.value)
+  }
+
+  const setAllToNull = () => {
+    setLabel('')
+    setMin('')
+    setSec('')
+  }
+
+  const labelSubmitHandler = (e) => {
+    if (e.key === 'Enter') {
+      if (label) {
+        onItemAdded(label, min, sec)
+        setAllToNull()
       }
+    } else if (e.key === 'Escape') {
+      setAllToNull()
     }
   }
 
-  render() {
-    const { label, min, sec } = this.state
-    return (
-      <header className="header">
-        <h1>todos</h1>
-        <form className="new-todo-form">
-          <input
-            className="new-todo"
-            placeholder="What needs to be done?"
-            onChange={this.onLabelChange}
-            value={label}
-            onKeyDown={this.labelSubmitHandler}
-          />
-          <input
-            type="number"
-            className="new-todo-form__timer"
-            placeholder="Min"
-            value={min}
-            onChange={this.onMinChange}
-            onKeyDown={this.labelSubmitHandler}
-          />
-          <input
-            type="number"
-            className="new-todo-form__timer"
-            placeholder="Sec"
-            value={sec}
-            onChange={this.onSecChange}
-            onKeyDown={this.labelSubmitHandler}
-          />
-        </form>
-      </header>
-    )
-  }
+  return (
+    <header className="header">
+      <h1>todos</h1>
+      <form className="new-todo-form">
+        <input
+          className="new-todo"
+          placeholder="What needs to be done?"
+          onChange={onLabelChange}
+          value={label}
+          onKeyDown={labelSubmitHandler}
+        />
+        <input
+          type="number"
+          className="new-todo-form__timer"
+          placeholder="Min"
+          value={min}
+          onChange={onMinChange}
+          onKeyDown={labelSubmitHandler}
+        />
+        <input
+          type="number"
+          className="new-todo-form__timer"
+          placeholder="Sec"
+          value={sec}
+          onChange={onSecChange}
+          onKeyDown={labelSubmitHandler}
+        />
+      </form>
+    </header>
+  )
 }
+
 NewTaskForm.propTypes = {
   onItemAdded: PropTypes.func.isRequired,
 }
