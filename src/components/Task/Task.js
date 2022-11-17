@@ -65,6 +65,7 @@ export default function Task({
       </div>
       {edit ? (
         <input
+          autoFocus
           type="text"
           onKeyDown={onKeyDown}
           onBlur={blur}

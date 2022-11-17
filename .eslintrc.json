@@ -32,6 +32,7 @@
     "jsx-a11y"
   ],
   "rules": {
+    "jsx-a11y/no-autofocus": 0,
     "indent": [
       "off"
 

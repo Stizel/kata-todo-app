@@ -27,10 +27,14 @@ export default function Timer({ tick, timer }) {
         tick()
       }
     }, 1000)
+    if (timer === 0) clearInterval(tik)
     return () => clearInterval(tik)
-  }, [play])
+  }, [play, timer])
 
-  const cls = !play ? 'icon icon-play' : 'icon icon-pause'
+  let cls = !play ? 'icon icon-play' : 'icon icon-pause'
+  if (timer === 0) {
+    cls = null
+  }
   const timerClickHandler = !play ? startTimer : pauseTimer
 
   return (
