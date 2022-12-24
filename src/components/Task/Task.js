@@ -12,7 +12,7 @@ export default function Task({
   visible,
   edit,
   done,
-  created,
+            created,
   onDeleted,
   onToggleDone,
   onToggleEdit,
@@ -20,7 +20,7 @@ export default function Task({
   tick,
 }) {
   const [oldLabel, setOldLabel] = useState(label)
-  const [newLabel, setNewLabel] = useState(label)
+  const [newLabel , setNewLabel ] = useState( label)
 
   const onLabelChange = (e) => {
     setNewLabel(e.target.value)
@@ -53,7 +53,7 @@ export default function Task({
   return (
     <li className={clazz}>
       <div className="view">
-        <input id={htmlLabel} className="toggle" type="checkbox" onChange={() => onToggleDone(id)} checked={done} />
+        <input autoFocus id={htmlLabel} className="toggle" type="checkbox" onChange={() => onToggleDone(id)} checked={done} />
         <label htmlFor={htmlLabel}>
           <span className="title">{oldLabel}</span>
           <Timer timer={timer} tick={() => tick(id)} />
